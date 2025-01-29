@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"log"
+	"strconv"
+	"strings"
 	"time"
 
 	"go.temporal.io/sdk/activity"
@@ -25,7 +27,7 @@ func main() {
 
 func runWorker(temporalClient client.Client) {
 	firstExampleWorker := worker.New(temporalClient, "send-order", worker.Options{})
-	firstExampleWorker.RegisterActivityWithOptions(SendOrder, activity.RegisterOptions{
+	firstExampleWorker.RegisterActivityWithOptions(NewSendOrder().Run, activity.RegisterOptions{
 		Name: "SendOrder",
 	})
 
@@ -35,10 +37,21 @@ func runWorker(temporalClient client.Client) {
 	}
 }
 
-func SendOrder(_ context.Context) error {
-	log.Println("Send order activity started")
+type SendOrder struct{}
+
+func NewSendOrder() *SendOrder {
+	return &SendOrder{}
+}
+
+func (s *SendOrder) Run(_ context.Context, orderID string) (bool, error) {
+	log.Printf("Send order activity started, ID: %s\n", orderID)
 	time.Sleep(time.Second)
 	log.Println("Send order activity finished")
 
-	return nil
+	intID, _ := strconv.Atoi(strings.TrimLeft(orderID, "OrderWorkflow_"))
+	if intID%2 == 0 {
+		return true, nil
+	}
+
+	return false, nil
 }

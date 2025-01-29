@@ -2,6 +2,8 @@ module github.com/lelikptz/temporal
 
 go 1.22
 
+require go.temporal.io/sdk v1.29.1
+
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
@@ -17,7 +19,6 @@ require (
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/stretchr/testify v1.9.0 // indirect
 	go.temporal.io/api v1.38.0 // indirect
-	go.temporal.io/sdk v1.29.1 // indirect
 	golang.org/x/exp v0.0.0-20231127185646-65229373498e // indirect
 	golang.org/x/net v0.28.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
