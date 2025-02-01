@@ -35,7 +35,7 @@ func runTask(temporalClient client.Client, wg *sync.WaitGroup) {
 			context.Background(),
 			client.StartWorkflowOptions{
 				ID:        fmt.Sprintf("OrderWorkflow_%d", counter),
-				TaskQueue: "my-task-queue",
+				TaskQueue: "order-queue",
 			},
 			"OrderWorkflow",
 		)

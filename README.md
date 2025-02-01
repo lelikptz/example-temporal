@@ -10,25 +10,37 @@ temporal server start-dev
 #### Run distributed temporal workflow
 
 ```bash
-go run cmd/workflow/main.go
+go run cmd/order-management-system/*.go
 ```
 
-#### Run microservice with "create-order" activity
+#### Run microservice with "cancel-order-service" activity
 
 ```bash
-go run cmd/create-order/main.go
+go run cmd/cancel-order-service/*.go
+
+```
+#### Run microservice with "create-order-service" activity
+
+```bash
+go run cmd/create-order-service/*.go
 ```
 
-#### Run microservice with "send-order" activity
+#### Run microservice with "notification-service" activity
 
 ```bash
-go run cmd/send-order/main.go
+go run cmd/notification-service/*.go
+```
+
+#### Run microservice with "send-order-service" activity
+
+```bash
+go run cmd/send-order-service/*.go
 ```
 
 #### Run microservice with task producer
 
 ```bash
-go run cmd/task-producer/main.go
+go run cmd/task-producer/*.go
 ```
 
 ### Enjoy!
