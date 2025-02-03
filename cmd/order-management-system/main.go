@@ -35,7 +35,7 @@ func main() {
 func createOrder(ctx workflow.Context) {
 	_ = workflow.ExecuteActivity(workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 		TaskQueue:              "create-order",
-		ScheduleToCloseTimeout: time.Second * 10,
+		ScheduleToCloseTimeout: time.Minute,
 	}), "CreateOrder").Get(ctx, nil)
 }
 
@@ -43,7 +43,7 @@ func sendOrder(ctx workflow.Context) bool {
 	var sendOrderResult bool
 	_ = workflow.ExecuteActivity(workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 		TaskQueue:              "send-order",
-		ScheduleToCloseTimeout: time.Second * 10,
+		ScheduleToCloseTimeout: time.Minute,
 	}), "SendOrder", workflow.GetInfo(ctx).WorkflowExecution.ID).Get(ctx, &sendOrderResult)
 
 	return sendOrderResult
@@ -52,13 +52,13 @@ func sendOrder(ctx workflow.Context) bool {
 func sendNotify(ctx workflow.Context) {
 	_ = workflow.ExecuteActivity(workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 		TaskQueue:              "notification",
-		ScheduleToCloseTimeout: time.Second * 10,
+		ScheduleToCloseTimeout: time.Minute,
 	}), "SendNotification").Get(ctx, nil)
 }
 
 func sendCancel(ctx workflow.Context) {
 	_ = workflow.ExecuteActivity(workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 		TaskQueue:              "cancel-order",
-		ScheduleToCloseTimeout: time.Second * 10,
+		ScheduleToCloseTimeout: time.Minute,
 	}), "CancelOrder").Get(ctx, nil)
 }

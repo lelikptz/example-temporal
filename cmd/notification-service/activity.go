@@ -14,7 +14,7 @@ func NewNotification() *Notification {
 
 func (c *Notification) Handle(_ context.Context) error {
 	log.Println("Notification activity started")
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 15; i++ {
 		log.Println("Notification activity is running")
 		time.Sleep(time.Second)
 	}

@@ -14,7 +14,7 @@ func NewCancelOrder() *CancelOrder {
 
 func (c *CancelOrder) Handle(_ context.Context) error {
 	log.Println("Cancel order activity started")
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 15; i++ {
 		log.Println("Cancel order activity is running")
 		time.Sleep(time.Second)
 	}

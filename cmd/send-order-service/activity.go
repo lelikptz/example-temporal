@@ -16,7 +16,7 @@ func NewSendOrder() *SendOrder {
 
 func (s *SendOrder) Handle(_ context.Context, orderID string) (bool, error) {
 	log.Printf("Send order activity started, ID: %s\n", orderID)
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 15; i++ {
 		log.Println("Send order activity is running")
 		time.Sleep(time.Second)
 	}
