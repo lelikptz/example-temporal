@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -18,13 +20,17 @@ const (
 	OrderStatusCanceled   OrderStatus = "Canceled"
 )
 
+type Order struct {
+	ReservationTime time.Time
+}
+
 type OrderProcessor struct{}
 
 func NewOrderProcessor() *OrderProcessor {
 	return &OrderProcessor{}
 }
 
-func (o *OrderProcessor) Process(ctx workflow.Context) error {
+func (o *OrderProcessor) Process(ctx workflow.Context, order Order) error {
 	logger := workflow.GetLogger(ctx)
 
 	var orderStatus = OrderStatusNew
@@ -40,6 +46,12 @@ func (o *OrderProcessor) Process(ctx workflow.Context) error {
 	logger.Info("ORDER CREATED")
 	if err != nil {
 		logger.Error("Create order failed", "error", err)
+		return err
+	}
+
+	err = workflow.Sleep(ctx, order.ReservationTime.Sub(workflow.Now(ctx))-10*time.Second)
+	if err != nil {
+		logger.Error("Sleep failed", "error", err)
 		return err
 	}
 

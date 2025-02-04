@@ -27,32 +27,25 @@ func main() {
 	wg.Wait()
 }
 
+type Order struct {
+	ReservationTime time.Time
+}
+
 func runTask(temporalClient client.Client, wg *sync.WaitGroup) {
 	defer wg.Done()
-	counter := 1
-	for {
-		workflowRun, err := temporalClient.ExecuteWorkflow(
-			context.Background(),
-			client.StartWorkflowOptions{
-				ID:        fmt.Sprintf("OrderWorkflow_%d", counter),
-				TaskQueue: "order-queue",
-			},
-			"OrderWorkflow",
-		)
-		if err != nil {
-			log.Printf("Unable to execute workflow %s", err)
-			continue
-		}
-
-		err = workflowRun.Get(context.Background(), nil)
-		if err != nil {
-			log.Printf("Unable to get workflow %s", err)
-			continue
-		}
-
-		log.Printf("Result %s", "success")
-
-		counter++
-		time.Sleep(5 * time.Second)
+	_, err := temporalClient.ExecuteWorkflow(
+		context.Background(),
+		client.StartWorkflowOptions{
+			ID:        fmt.Sprintf("%s", time.Now().Format(time.DateTime)),
+			TaskQueue: "order-queue",
+		},
+		"OrderWorkflow",
+		Order{
+			ReservationTime: time.Now().Add(40 * time.Second),
+		},
+	)
+	if err != nil {
+		log.Printf("Unable to execute workflow %s", err)
+		return
 	}
 }
