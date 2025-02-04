@@ -11,8 +11,10 @@ type OrderStatus string
 const (
 	OrderStatusNew        OrderStatus = "New"
 	OrderStatusCreated    OrderStatus = "Created"
+	OrderStatusConfirmed  OrderStatus = "Confirmed"
 	OrderStatusSend       OrderStatus = "Send"
 	OrderStatusFailedSend OrderStatus = "FailedSend"
+	OrderStatusFinished   OrderStatus = "Finished"
 	OrderStatusCanceled   OrderStatus = "Canceled"
 )
 
@@ -50,12 +52,14 @@ func (o *OrderProcessor) Process(ctx workflow.Context) error {
 	}
 	if isSuccess {
 		orderStatus = OrderStatusSend
-		err = sendNotify(ctx)
-		if err != nil {
-			logger.Error("Send notification failed", "error", err)
-			return err
+		for orderStatus != OrderStatusFinished {
+			newStatus, err := statusPolling(ctx)
+			logger.Info("ORDER STATUS POLLING", "newStatus", newStatus)
+			if err != nil {
+				return err
+			}
+			orderStatus = OrderStatus(newStatus)
 		}
-		logger.Info("NOTIFY SEND")
 
 	} else {
 		orderStatus = OrderStatusFailedSend

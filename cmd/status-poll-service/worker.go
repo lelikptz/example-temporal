@@ -6,21 +6,21 @@ import (
 	"go.temporal.io/sdk/worker"
 )
 
-var taskQueueName = "notification"
+var taskQueueName = "status-polling"
 
 type Worker struct {
 	temporalClient client.Client
-	activity       *Notification
+	activity       *StatusPoll
 }
 
-func NewWorker(temporalClient client.Client, activity *Notification) *Worker {
+func NewWorker(temporalClient client.Client, activity *StatusPoll) *Worker {
 	return &Worker{temporalClient: temporalClient, activity: activity}
 }
 
 func (w *Worker) Run() error {
 	temporalWorker := worker.New(w.temporalClient, taskQueueName, worker.Options{})
 	temporalWorker.RegisterActivityWithOptions(w.activity.Handle, activity.RegisterOptions{
-		Name: "SendNotification",
+		Name: "StatusPoll",
 	})
 
 	return temporalWorker.Run(worker.InterruptCh())

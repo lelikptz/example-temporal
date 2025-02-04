@@ -49,16 +49,22 @@ func sendOrder(ctx workflow.Context) (bool, error) {
 	return sendOrderResult, err
 }
 
-func sendNotify(ctx workflow.Context) error {
-	return workflow.ExecuteActivity(workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
-		TaskQueue:              "notification",
-		ScheduleToCloseTimeout: time.Minute,
-	}), "SendNotification").Get(ctx, nil)
-}
-
 func sendCancel(ctx workflow.Context) error {
 	return workflow.ExecuteActivity(workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 		TaskQueue:              "cancel-order",
 		ScheduleToCloseTimeout: time.Minute,
 	}), "CancelOrder").Get(ctx, nil)
+}
+
+func statusPolling(ctx workflow.Context) (string, error) {
+	var status string
+	err := workflow.ExecuteActivity(workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
+		TaskQueue:              "status-polling",
+		ScheduleToCloseTimeout: time.Minute,
+	}), "StatusPoll").Get(ctx, &status)
+	if err != nil {
+		return "", err
+	}
+
+	return status, nil
 }

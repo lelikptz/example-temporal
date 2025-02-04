@@ -25,10 +25,10 @@ go run cmd/cancel-order-service/*.go
 go run cmd/create-order-service/*.go
 ```
 
-#### Run microservice with "notification-service" activity
+#### Run microservice with "status-poll-service" activity
 
 ```bash
-go run cmd/notification-service/*.go
+go run cmd/status-poll-service/*.go
 ```
 
 #### Run microservice with "send-order-service" activity

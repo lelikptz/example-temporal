@@ -17,6 +17,6 @@ func main() {
 	defer temporalClient.Close()
 
 	log.Fatalln(
-		NewWorker(temporalClient, NewNotification()).Run(),
+		NewWorker(temporalClient, NewStatusPoll()).Run(),
 	)
 }
