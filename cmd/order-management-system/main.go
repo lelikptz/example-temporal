@@ -32,32 +32,32 @@ func main() {
 	}
 }
 
-func createOrder(ctx workflow.Context) {
-	_ = workflow.ExecuteActivity(workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
+func createOrder(ctx workflow.Context) error {
+	return workflow.ExecuteActivity(workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 		TaskQueue:              "create-order",
 		ScheduleToCloseTimeout: time.Minute,
 	}), "CreateOrder").Get(ctx, nil)
 }
 
-func sendOrder(ctx workflow.Context) bool {
-	var sendOrderResult bool
-	_ = workflow.ExecuteActivity(workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
+func sendOrder(ctx workflow.Context) (bool, error) {
+	var sendOrderResult = false
+	err := workflow.ExecuteActivity(workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 		TaskQueue:              "send-order",
 		ScheduleToCloseTimeout: time.Minute,
 	}), "SendOrder", workflow.GetInfo(ctx).WorkflowExecution.ID).Get(ctx, &sendOrderResult)
 
-	return sendOrderResult
+	return sendOrderResult, err
 }
 
-func sendNotify(ctx workflow.Context) {
-	_ = workflow.ExecuteActivity(workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
+func sendNotify(ctx workflow.Context) error {
+	return workflow.ExecuteActivity(workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 		TaskQueue:              "notification",
 		ScheduleToCloseTimeout: time.Minute,
 	}), "SendNotification").Get(ctx, nil)
 }
 
-func sendCancel(ctx workflow.Context) {
-	_ = workflow.ExecuteActivity(workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
+func sendCancel(ctx workflow.Context) error {
+	return workflow.ExecuteActivity(workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 		TaskQueue:              "cancel-order",
 		ScheduleToCloseTimeout: time.Minute,
 	}), "CancelOrder").Get(ctx, nil)

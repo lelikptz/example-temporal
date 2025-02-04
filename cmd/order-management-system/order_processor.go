@@ -26,7 +26,7 @@ func (o *OrderProcessor) Process(ctx workflow.Context) error {
 	logger := workflow.GetLogger(ctx)
 
 	var orderStatus = OrderStatusNew
-	logger.Info("Order process started")
+	logger.Info("ORDER PROCESS STARTED")
 
 	_ = workflow.SetQueryHandler(ctx, GetOrderStatusQuery, func() (OrderStatus, error) {
 		logger.Info("GetOrderStatusQuery")
@@ -34,19 +34,40 @@ func (o *OrderProcessor) Process(ctx workflow.Context) error {
 		return orderStatus, nil
 	})
 
-	createOrder(ctx)
-	orderStatus = OrderStatusCreated
-
-	isSuccess := sendOrder(ctx)
-	if isSuccess {
-		orderStatus = OrderStatusSend
-		sendNotify(ctx)
-	} else {
-		orderStatus = OrderStatusFailedSend
-		sendCancel(ctx)
-		orderStatus = OrderStatusCanceled
+	err := createOrder(ctx)
+	logger.Info("ORDER CREATED")
+	if err != nil {
+		logger.Error("Create order failed", "error", err)
+		return err
 	}
 
-	logger.Info("Order process finished")
+	orderStatus = OrderStatusCreated
+	isSuccess, err := sendOrder(ctx)
+	logger.Info("ORDER SEND")
+	if err != nil {
+		logger.Error("Send order failed", "error", err)
+		return err
+	}
+	if isSuccess {
+		orderStatus = OrderStatusSend
+		err = sendNotify(ctx)
+		if err != nil {
+			logger.Error("Send notification failed", "error", err)
+			return err
+		}
+		logger.Info("NOTIFY SEND")
+
+	} else {
+		orderStatus = OrderStatusFailedSend
+		err = sendCancel(ctx)
+		if err != nil {
+			logger.Error("Send cancel failed", "error", err)
+			return err
+		}
+		orderStatus = OrderStatusCanceled
+		logger.Info("ORDER CANCELED")
+	}
+
+	logger.Info("ORDER PROCESS FINISHED")
 	return nil
 }
